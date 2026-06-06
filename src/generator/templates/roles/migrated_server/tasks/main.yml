@@ -1,0 +1,3 @@
+# tasks/main.yml — entry point
+# Imports all task files in order.
+# __VERSION_NOTE__

@@ -1,0 +1,1 @@
+"""MigrateOS — core package."""

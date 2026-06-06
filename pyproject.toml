@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "migrateos"
+version = "0.1.0"
+description = "Scan a Fedora server and generate an idempotent Ansible project to recreate it"
+requires-python = ">=3.9"
+dependencies = [
+    "PyYAML>=6.0",
+    "Jinja2>=3.0",
+]
+
+[project.scripts]
+migrate-scan = "src.cli:main"

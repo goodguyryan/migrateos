@@ -1,0 +1,4 @@
+# Example manifest — full coverage of all sections.
+# TODO: Populate with a complete sample manifest exercising all sections:
+# os, packages, services, users, configs, firewalld, cron, sysctl,
+# secrets, warnings, databases, containers, network.
