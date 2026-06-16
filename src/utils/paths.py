@@ -16,7 +16,7 @@ from src.utils.constants import (BLOCKED_EXACT,
 )
 
 def is_blocked_path(path: Path) -> bool:
-    normalized = str(path.as_posix())
+    normalized = str(path.as_posix().replace("\\", "/"))
 
     if normalized in BLOCKED_EXACT:
         return True
