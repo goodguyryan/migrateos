@@ -1,5 +1,5 @@
-"""Safe subprocess wrapper — never shell=True.
-"""
+"""Subprocess wrapper"""
+
 import subprocess
 from typing import List, Tuple
 
