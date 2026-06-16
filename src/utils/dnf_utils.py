@@ -12,7 +12,7 @@ from typing import List
 def detect_dnf_version() -> str:
     ok, stdout, _ = safe_run(["dnf", "--version"])
 
-    if ok and "detect_dnf_version" in stdout.lower():
+    if ok and "dn5" in stdout.lower():
         return "dnf5"
     return "dnf"
 
