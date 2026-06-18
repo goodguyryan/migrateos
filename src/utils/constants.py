@@ -112,3 +112,12 @@ SKIPPED_USERS = {
     "tss", "chrony", "avahi", "colord", "geoclue", "gdm", "rtkit",
     "pipewire", "pulse", "flatpak", "setroubleshoot",
 }
+
+INFRASTRUCTURE_SERVICES = {
+    "postgresql", "mariadb", "mysqld", "nginx", "httpd", "apache2",
+    "redis", "redis-server", "memcached", "rabbitmq-server",
+    "named", "bind9", "ntpd", "chronyd", "sshd",
+    "docker", "podman", "libvirtd",
+    "snmpd", "nrpe", "zabbix-agent",
+    "haproxy", "varnish", "squid",
+}
