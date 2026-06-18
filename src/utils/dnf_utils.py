@@ -1,18 +1,12 @@
-"""DNF version detection and command construction for DNF4 vs DNF5 compatibility.
+"""DNF version detection and command construction for DNF4 vs DNF5 compatibility."""
 
-TODO:
-    - Implement detect_dnf_cmd() -> str (run dnf --version, parse output, return "dnf5" or "dnf")
-    - Implement userinstalled_cmd(dnf_cmd: str) -> List[str] (returns [dnf, "repoquery", "--userinstalled", "--qf", "%{name}"])
-    - Implement group_list_cmd(dnf_cmd: str) -> List[str] (returns [dnf, "group", "list", "--installed"]; add --ids for dnf4, omit for dnf5)
-    - Fallback: if dnf --version fails, default to "dnf" (dnf4 behavior)
-"""
 from src.utils.command import safe_run
 from typing import List
 
 def detect_dnf_version() -> str:
     ok, stdout, _ = safe_run(["dnf", "--version"])
 
-    if ok and "dn5" in stdout.lower():
+    if ok and "dnf5" in stdout.lower():
         return "dnf5"
     return "dnf"
 
@@ -24,3 +18,6 @@ def return_group_list_cmd(dnf_cmd: str) -> List[str]:
     if dnf_cmd == "dnf":
         cmd.append("--ids")
     return cmd
+
+def return_extras_cmd(dnf_cmd: str) -> List[str]:
+    return [dnf_cmd, "list", "--extras"]
