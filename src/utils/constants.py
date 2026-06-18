@@ -103,3 +103,12 @@ STOCK_SELINUX_MODULES = {
     "virt", "vmware", "vnc", "vpn", "watchdog", "xserver",
     "zabbix", "zebra",
 }
+
+SKIPPED_USERS = {
+    "root", "daemon", "bin", "sys", "sync", "games", "man", "lp",
+    "mail", "news", "uucp", "proxy", "www-data", "backup", "list",
+    "irc", "gnats", "nobody", "_apt", "systemd-network", "systemd-resolve",
+    "messagebus", "sshd", "polkitd", "rpc", "rpcuser", "dbus", "ntp",
+    "tss", "chrony", "avahi", "colord", "geoclue", "gdm", "rtkit",
+    "pipewire", "pulse", "flatpak", "setroubleshoot",
+}
