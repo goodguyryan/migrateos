@@ -1,7 +1,28 @@
-"""Tests for containers.py: Docker/Podman container detection.
+"""Tests for containers.py: Docker/Podman container detection."""
 
-TODO:
-    - test_parse_docker_ps_output() (docker ps output → container names parsed)
-    - test_parse_podman_ps_output() (podman ps output → container names parsed)
-    - test_collect_with_no_containers() (empty output → empty runtimes, no warning)
+from src.scanner.containers import parse_docker_ps, parse_podman_ps
+
+def test_parse_docker_ps_normal():
+    text = """\
+web-app
+db
+cache
 """
+    result = parse_docker_ps(text)
+    assert result == ["web-app", "db", "cache"]
+
+def test_parse_docker_ps_empty():
+    result = parse_docker_ps("")
+    assert result == []
+
+def test_parse_podman_ps_normal():
+    text = """\
+my-nginx
+my-postgres
+"""
+    result = parse_podman_ps(text)
+    assert result == ["my-nginx", "my-postgres"]
+
+def test_parse_podman_ps_empty():
+    result = parse_podman_ps("")
+    assert result == []
