@@ -78,3 +78,28 @@ INCLUDE_RE = re.compile(
     r'^\s*(?:include|Include(?:Optional)?|#includedir|\$IncludeConfig|\.include)\s+(\S+)',
     re.MULTILINE,
 )
+
+STOCK_SELINUX_MODULES = {
+    "abrt", "accountsd", "acct", "afs", "aide", "alsa", "amavis",
+    "antivirus", "apache", "arpwatch", "asterisk", "auditadm", "automount",
+    "avahi", "bind", "bluetooth", "boinc", "certmonger", "cgroup",
+    "chronyd", "clamav", "cockpit", "colord", "container", "cron",
+    "cups", "dbus", "dhcpc", "dhcpd", "dnsmasq", "docker", "dovecot",
+    "exim", "firewalld", "fprintd", "ftp", "git", "gpg", "gssproxy",
+    "haproxy", "http", "inetd", "ipsec", "irc", "irqbalance",
+    "iscsi", "kerberos", "kdump", "ksmtuned", "ldap", "logrotate",
+    "logwatch", "lpd", "mailman", "mcelog", "memcached", "modemmanager",
+    "mongod", "mount", "mpd", "mysql", "nagios", "networkmanager",
+    "nfs", "nis", "nut", "openvpn", "openvswitch", "pcp",
+    "pcscd", "plymouth", "podman", "policykit", "portreserve", "postfix",
+    "postgresql", "ppp", "privoxy", "procmail", "pulseaudio", "puppet",
+    "qemu", "rabbitmq", "radvd", "realmd", "redis", "rhsm",
+    "rhsmcertd", "rpm", "rsync", "rtkit", "samba", "sanlock",
+    "sasl", "securetty", "selinux", "sendmail", "shutdown", "slapd",
+    "smartmon", "snmp", "snort", "spamassassin", "squid", "ssh",
+    "sssd", "staff", "sysadm", "syslog", "systemtap", "targetd",
+    "telnet", "tftp", "tomcat", "tor", "tuned", "ucarp",
+    "unconfined", "unprivuser", "usermanage", "uucp", "varnishd",
+    "virt", "vmware", "vnc", "vpn", "watchdog", "xserver",
+    "zabbix", "zebra",
+}

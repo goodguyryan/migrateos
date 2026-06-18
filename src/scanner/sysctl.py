@@ -1,10 +1,5 @@
-"""Scan kernel parameters from sysctl config files.
+"""Scan kernel parameters from sysctl config files."""
 
-TODO:
-    - collect() -> dict
-    - Scan /etc/sysctl.conf and /etc/sysctl.d/*.conf
-    - Return: {files: [{src, dest}]}
-"""
 from pathlib import Path
 from src.utils.paths import is_excluded_file, is_blocked_path
 
