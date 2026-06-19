@@ -12,5 +12,5 @@ import pytest
 @pytest.fixture
 def temp_dir():
     # Create a temporary directory for the test
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(dir=str(Path.cwd())) as tmpdir:
         yield Path(tmpdir)
