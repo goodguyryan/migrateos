@@ -39,7 +39,7 @@ def copy_file_from_disk(src_path: Path, dest_path: Path) -> Tuple[bool, str]:
     except (PermissionError, OSError, shutil.Error) as e:
         return (False, f"error: {e}")
 
-def write_file_from_content(content: str, dest_path: str) -> Tuple[bool, str]:
+def write_file_from_content(content: str, dest_path: Path) -> Tuple[bool, str]:
     try:
         dest_path.parent.mkdir(parents=True, exist_ok=True)
         dest_path.write_text(content, encoding="utf-8")
@@ -110,3 +110,110 @@ def bundle_cron_files(cron_files: List[dict], output_dir: Path) -> dict:
             skipped.append(reason)
 
     return {"copied": copied, "skipped": skipped}
+
+def bundle_sysctl_files(sysctl_files: List[dict], output_dir: Path) -> dict:
+    copied = []
+    skipped = []
+
+    for sysctl_file in sysctl_files:
+        src = Path(sysctl_file["src"])
+        dest = output_dir / "files" /sysctl_file["dest"]
+        ok, reason = copy_file_from_disk(src, dest)
+
+        if ok:
+            copied.append(f"files/{sysctl_file['dest']}")
+        else:
+            skipped.append(reason)
+
+    return {"copied": copied, "skipped": skipped}
+
+def bundle_services(services: List[dict], output_dir: Path) -> dict:
+    copied = []
+    skipped = []
+
+    for service in services:
+        if not service.get("custom_unit"):
+            continue
+        if not service.get("unit_file"):
+            skipped.append(f"no unit_file content: {service['name']}")
+            continue
+
+        dest = output_dir / "files" / "systemd" / service["name"]
+        ok, reason = write_file_from_content(service["unit_file"], dest)
+
+        if ok:
+            copied.append(f"files/systemd/{service['name']}")
+        else:
+            skipped.append(reason)
+    
+    return {"copied": copied, "skipped": skipped}
+
+def bundle_network_files(output_dir: Path) -> dict:
+    copied = []
+    skipped = []
+
+    NetworkManager_dir = Path("/etc/NetworkManager/system-connections")
+    if not NetworkManager_dir.is_dir():
+        return {"copied": [], "skipped": ["NetworkManager connections dir not found"]}
+
+    for NetworkManager_file in sorted(NetworkManager_dir.glob("*.nmconnection")):
+        if is_blocked_path(NetworkManager_file):
+            skipped.append(f"blocked: {NetworkManager_file}")
+            continue
+
+        dest = output_dir / "review" / "NetworkManager" / NetworkManager_file.name
+        ok, reason = copy_file_from_disk(NetworkManager_file, dest)
+        if ok:
+            copied.append(str(dest.relative_to(output_dir)))
+        else:
+            skipped.append(reason)
+
+    return {"copied": copied, "skipped": skipped}
+
+def bundle_manifest(manifest: dict, output_dir: Path, include_network: bool = False) -> dict:
+    all_copied = []
+    all_skipped = []
+    all_warnings = []
+
+    config_files = manifest.get("configs", {}).get("config_files", [])
+    result = bundle_config_files(config_files, output_dir)
+    all_copied.extend(result["copied"])
+    all_skipped.extend(result["skipped"])
+    all_warnings.extend(manifest.get("configs", {}).get("warnings", []))
+
+    custom_repos = manifest.get("packages", {}).get("custom_repos", [])
+    result = bundle_custom_repos(custom_repos, output_dir)
+    all_copied.extend(result["copied"])
+    all_skipped.extend(result["skipped"])
+
+    cron_files = manifest.get("cron", {}).get("files", [])
+    result = bundle_cron_files(cron_files, output_dir)
+    all_copied.extend(result["copied"])
+    all_skipped.extend(result["skipped"])
+
+    sysctl_files = manifest.get("sysctl", {}).get("files", [])
+    result = bundle_sysctl_files(sysctl_files, output_dir)
+    all_copied.extend(result["copied"])
+    all_skipped.extend(result["skipped"])
+
+    services = manifest.get("services", {}).get("services", [])
+    result = bundle_services(services, output_dir)
+    all_copied.extend(result["copied"])
+    all_skipped.extend(result["skipped"])
+
+    if include_network:
+        result = bundle_network_files(output_dir)
+        all_copied.extend(result["copied"])
+        all_skipped.extend(result["skipped"])
+
+    if all_skipped:
+        all_warnings.append(
+            f"{len(all_skipped)} file(s) skipped during bundling. "
+            "Review the skipped list for blocked/secret files."
+        )
+
+    return {
+        "copied": all_copied,
+        "skipped": all_skipped,
+        "warnings": all_warnings,
+    }

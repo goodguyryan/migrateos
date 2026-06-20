@@ -1,9 +1,4 @@
-"""Shared pytest fixtures for the MigrateOS test suite.
-
-TODO:
-    - Fixture sample_manifest() -> dict (complete minimal manifest exercising all sections: os, packages, services, users, configs, firewalld, cron, sysctl, secrets, warnings, databases, containers, network)
-    - Fixture temp_dir() -> Path (creates temporary directory, yields it, cleans up after test)
-"""
+"""Shared pytest fixtures for the MigrateOS test suite."""
 
 import tempfile
 from pathlib import Path
@@ -14,3 +9,28 @@ def temp_dir():
     # Create a temporary directory for the test
     with tempfile.TemporaryDirectory(dir=str(Path.cwd())) as tmpdir:
         yield Path(tmpdir)
+
+@pytest.fixture
+def sample_manifest():
+    """Returns a minimal manifest dict suitable for bundler testing."""
+    return {
+        "configs": {
+            "config_files": [],
+            "warnings": [],
+        },
+        "packages": {
+            "custom_repos": [],
+        },
+        "cron": {
+            "files": [],
+        },
+        "sysctl": {
+            "files": [],
+        },
+        "services": {
+            "services": [],
+        },
+        "network": {
+            "connections": [],
+        },
+    }
