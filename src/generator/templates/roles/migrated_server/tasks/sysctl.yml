@@ -1,1 +1,17 @@
-# tasks/sysctl.yml — apply kernel parameters
+# __VERSION_NOTE__
+---
+- name: Deploy sysctl config files
+  ansible.builtin.copy:
+    src: "files/{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ sysctl_files }}"
+  when: sysctl_files | default([]) | length > 0
+  notify: reload sysctl
+
+- name: Apply sysctl settings
+  ansible.builtin.command: sysctl --system
+  changed_when: false
+  when: sysctl_files | default([]) | length > 0

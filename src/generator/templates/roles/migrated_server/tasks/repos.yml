@@ -1,1 +1,16 @@
-# tasks/repos.yml — install custom DNF repos
+# __VERSION_NOTE__
+---
+- name: Install custom repo files
+  ansible.builtin.copy:
+    src: "etc/yum.repos.d/{{ item }}.repo"
+    dest: "/etc/yum.repos.d/{{ item }}.repo"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ custom_repo_files }}"
+  when: custom_repo_files | default([]) | length > 0
+
+- name: Refresh DNF cache after repo changes
+  ansible.builtin.dnf:
+    update_cache: yes
+  when: custom_repo_files | default([]) | length > 0

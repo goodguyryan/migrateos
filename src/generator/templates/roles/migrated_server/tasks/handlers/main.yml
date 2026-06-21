@@ -1,1 +1,13 @@
-# handlers/main.yml — restart services on config change
+# __VERSION_NOTE__
+---
+- name: reload sysctl
+  ansible.builtin.command: sysctl --system
+  changed_when: false
+
+- name: restart infrastructure service
+  ansible.builtin.systemd:
+    name: "{{ item.name }}"
+    state: restarted
+    daemon_reload: yes
+  loop: "{{ services_infrastructure }}"
+  when: services_infrastructure | default([]) | length > 0

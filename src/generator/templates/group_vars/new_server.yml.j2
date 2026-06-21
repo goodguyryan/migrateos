@@ -1,2 +1,152 @@
-# Jinja2 template for group_vars/new_server.yml
-# All variables from manifest. Loops over packages, services, users, configs, firewalld zones.
+# {{ version_note }}
+# Review ALL values below before running the playbook.
+
+# =============================================================================
+# PACKAGES
+# =============================================================================
+dnf_packages:
+{% for package in dnf_packages %}
+  - {{ package }}
+{% endfor %}
+
+{% if dnf_groups %}
+dnf_groups:
+{% for group in dnf_groups %}
+  - "{{ group }}"
+{% endfor %}
+{% endif %}
+
+{% if dnf_extras %}
+dnf_extras:
+{% for extra in dnf_extras %}
+  - {{ extra }}
+{% endfor %}
+{% endif %}
+
+{% if custom_repo_files %}
+custom_repo_files:
+{% for repo in custom_repo_files %}
+  - {{ repo }}
+{% endfor %}
+{% endif %}
+
+# =============================================================================
+# SERVICES (infrastructure starts first, then application)
+# =============================================================================
+services_infrastructure:
+{% for service in services_infra %}
+  - name: {{ service.name }}
+    enabled: {{ service.enabled | default(true) | lower }}
+{% if service.custom_unit | default(false) %}
+    custom_unit: true
+{% endif %}
+{% endfor %}
+
+services_application:
+{% for service in services_app %}
+  - name: {{ service.name }}
+    enabled: {{ service.enabled | default(true) | lower }}
+{% if service.custom_unit | default(false) %}
+    custom_unit: true
+{% endif %}
+{% endfor %}
+
+# =============================================================================
+# USERS & GROUPS
+# =============================================================================
+{% if migrated_groups %}
+groups:
+{% for group in migrated_groups %}
+  - name: {{ group.name }}
+    gid: {{ group.gid | default('omit') }}
+{% endfor %}
+{% endif %}
+
+{% if migrated_users %}
+users:
+{% for user in migrated_users %}
+  - name: {{ user.name }}
+    uid: {{ user.uid | default('omit') }}
+    shell: {{ user.shell | default('/bin/bash') }}
+    home: {{ user.home | default('/home/' + user.name) }}
+    groups: {{ user.groups | default([]) | join(',') }}
+{% if user.ssh_key | default(false) %}
+    ssh_key: {{ user.ssh_key }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+# =============================================================================
+# DIRECTORIES
+# =============================================================================
+{% if app_directories %}
+app_directories:
+{% for directory in app_directories %}
+  - path: {{ directory.path }}
+    owner: {{ directory.owner | default('root') }}
+    group: {{ directory.group | default('root') }}
+    mode: "{{ directory.mode | default('0755') }}"
+{% endfor %}
+{% endif %}
+
+# =============================================================================
+# CONFIG FILES (single files)
+# =============================================================================
+{% if config_files %}
+config_files:
+{% for config in config_files %}
+  - src: {{ config.bundled_src | default(config.path) }}
+    dest: {{ config.path }}
+    owner: {{ config.owner | default('root') }}
+    group: {{ config.group | default('root') }}
+    mode: "{{ config.mode | default('0644') }}"
+{% endfor %}
+{% endif %}
+
+# =============================================================================
+# CONFIG DIRECTORIES (recursive copy)
+# =============================================================================
+{% if config_dirs %}
+config_directories:
+{% for config in config_dirs %}
+  - src: {{ config.bundled_src | default(config.path) }}
+    dest: {{ config.path }}
+    owner: {{ config.owner | default('root') }}
+    group: {{ config.group | default('root') }}
+{% endfor %}
+{% endif %}
+
+# =============================================================================
+# CRON
+# =============================================================================
+{% if cron_files %}
+cron_files:
+{% for cron in cron_files %}
+  - src: {{ cron.src }}
+    dest: {{ cron.dest }}
+{% endfor %}
+{% endif %}
+
+{% if cron_timers %}
+cron_timers:
+{% for timer in cron_timers %}
+  - name: {{ timer.name }}
+    enabled: {{ timer.enabled | default(true) | lower }}
+{% endfor %}
+{% endif %}
+
+# =============================================================================
+# SYSCTL
+# =============================================================================
+{% if sysctl_files %}
+sysctl_files:
+{% for sysctl in sysctl_files %}
+  - src: {{ sysctl.src }}
+    dest: {{ sysctl.dest }}
+{% endfor %}
+{% endif %}
+
+# =============================================================================
+# SELINUX
+# =============================================================================
+selinux_mode: "{{ selinux_mode }}"

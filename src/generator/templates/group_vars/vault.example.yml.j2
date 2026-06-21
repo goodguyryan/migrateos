@@ -1,2 +1,8 @@
-# Jinja2 template for group_vars/vault.example.yml
-# Placeholder for ansible-vault
+# {{ version_note }}
+#
+# Example vault file. Copy this to vault.yml and encrypt:
+#   cp group_vars/vault.example.yml group_vars/vault.yml
+#   ansible-vault encrypt group_vars/vault.yml
+#
+# Then reference vault_ variables in your tasks.
+vault_secrets: {}

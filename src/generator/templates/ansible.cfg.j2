@@ -1,2 +1,16 @@
-# Jinja2 template for ansible.cfg
-# __VERSION_NOTE__
+# {{ version_note }}
+[defaults]
+host_key_checking = False
+gathering = smart
+forks = 5
+stdout_callback = yaml
+retry_files_enabled = False
+roles_path = ./roles
+
+[privilege_escalation]
+become = True
+become_method = sudo
+become_ask_pass = False
+
+[ssh_connection]
+pipelining = True

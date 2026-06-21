@@ -1,1 +1,21 @@
-# tasks/verification.yml — post-migration checks
+# __VERSION_NOTE__
+---
+- name: Verify DNF packages are installed
+  ansible.builtin.command: "rpm -q {{ item }}"
+  loop: "{{ dnf_packages }}"
+  when: dnf_packages | default([]) | length > 0
+  changed_when: false
+  failed_when: false
+  register: package_check
+
+- name: Verify infrastructure services are running
+  ansible.builtin.command: "systemctl is-active {{ item.name }}"
+  loop: "{{ services_infrastructure }}"
+  when: services_infrastructure | default([]) | length > 0
+  changed_when: false
+  failed_when: false
+  register: service_check
+
+- name: Report verification results
+  ansible.builtin.debug:
+    msg: "Verification complete. Check output above for any failures."

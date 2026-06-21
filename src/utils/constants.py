@@ -121,3 +121,42 @@ INFRASTRUCTURE_SERVICES = {
     "snmpd", "nrpe", "zabbix-agent",
     "haproxy", "varnish", "squid",
 }
+
+PLACEHOLDER_MAP = {
+    "__VERSION_NOTE__": "version_note",
+    "__SOURCE_HOSTNAME__": "source_hostname",
+    "__TIMESTAMP__": "timestamp",
+}
+
+DATABASE_SERVICES = {
+    "postgresql", "mariadb", "mysqld", "mysql",
+    "redis", "redis-server", "mongod",
+}
+
+TASK_FILE_NAMES = [
+    "bootstrap.yml",
+    "validate.yml",
+    "repos.yml",
+    "packages.yml",
+    "users.yml",
+    "directories.yml",
+    "configs.yml",
+    "cron.yml",
+    "sysctl.yml",
+    "services.yml",
+    "selinux.yml",
+    "verification.yml",
+    "main.yml",
+]
+
+HANDLER_FILE = "handlers/main.yml"
+
+J2_TEMPLATES = {
+    "ansible.cfg.j2": "ansible.cfg",
+    "requirements.yml.j2": "requirements.yml",
+    "inventory.ini.j2": "inventory.ini",
+    "site.yml.j2": "site.yml",
+    "WARNINGS.md.j2": "WARNINGS.md",
+    "group_vars/new_server.yml.j2": "group_vars/new_server.yml",
+    "group_vars/vault.example.yml.j2": "group_vars/vault.example.yml",
+}

@@ -1,0 +1,1 @@
+"""Tests for ansible_generator.py: verify generated Ansible project structure and content."""

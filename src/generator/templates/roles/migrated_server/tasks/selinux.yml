@@ -1,1 +1,7 @@
-# tasks/selinux.yml — set SELinux mode
+# __VERSION_NOTE__
+---
+- name: Set SELinux mode
+  ansible.posix.selinux:
+    policy: targeted
+    state: "{{ selinux_mode }}"
+  when: selinux_mode | default('enforcing') | length > 0

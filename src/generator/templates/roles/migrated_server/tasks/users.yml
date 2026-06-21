@@ -1,1 +1,29 @@
-# tasks/users.yml — create groups and users
+# __VERSION_NOTE__
+---
+- name: Create groups
+  ansible.builtin.group:
+    name: "{{ item.name }}"
+    gid: "{{ item.gid | default(omit) }}"
+    state: present
+  loop: "{{ migrated_groups }}"
+  when: migrated_groups | default([]) | length > 0
+
+- name: Create users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid | default(omit) }}"
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    home: "{{ item.home | default('/home/' + item.name) }}"
+    groups: "{{ item.groups | default([]) | join(',') }}"
+    append: yes
+    state: present
+  loop: "{{ migrated_users }}"
+  when: migrated_users | default([]) | length > 0
+
+- name: Deploy SSH authorized keys
+  ansible.posix.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_key }}"
+    state: present
+  loop: "{{ migrated_users }}"
+  when: migrated_users | default([]) | length > 0 and item.ssh_key | default(false)

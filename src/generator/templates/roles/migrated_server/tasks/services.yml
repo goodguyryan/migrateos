@@ -1,1 +1,19 @@
-# tasks/services.yml — enable and start services (infrastructure first, then application)
+# __VERSION_NOTE__
+---
+- name: Enable and start infrastructure services
+  ansible.builtin.systemd:
+    name: "{{ item.name }}"
+    enabled: "{{ item.enabled | default(true) }}"
+    state: started
+    daemon_reload: yes
+  loop: "{{ services_infrastructure }}"
+  when: services_infrastructure | default([]) | length > 0
+
+- name: Enable and start application services
+  ansible.builtin.systemd:
+    name: "{{ item.name }}"
+    enabled: "{{ item.enabled | default(true) }}"
+    state: started
+    daemon_reload: yes
+  loop: "{{ services_application }}"
+  when: services_application | default([]) | length > 0

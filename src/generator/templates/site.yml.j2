@@ -1,1 +1,9 @@
-# Jinja2 template for site.yml — master playbook
+# {{ version_note }}
+---
+- name: Migrate server from {{ source_hostname }}
+  hosts: migrated
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - role: migrated_server

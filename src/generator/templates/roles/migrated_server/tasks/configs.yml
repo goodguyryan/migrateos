@@ -1,1 +1,23 @@
-# tasks/configs.yml — deploy config files and directories
+# __VERSION_NOTE__
+---
+- name: Deploy single config files
+  ansible.builtin.copy:
+    src: "files/{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0644') }}"
+    backup: yes
+  loop: "{{ config_files }}"
+  when: config_files | default([]) | length > 0
+  notify: "{{ item.notify | default(omit) }}"
+
+- name: Deploy config directories
+  ansible.posix.synchronize:
+    src: "files/{{ item.src }}/"
+    dest: "{{ item.dest }}/"
+    archive: no
+    recursive: yes
+    delete: no
+  loop: "{{ config_dirs }}"
+  when: config_dirs | default([]) | length > 0

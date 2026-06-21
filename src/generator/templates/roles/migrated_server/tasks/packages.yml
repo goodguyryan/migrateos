@@ -1,1 +1,19 @@
-# tasks/packages.yml — install all packages from manifest
+# __VERSION_NOTE__
+---
+- name: Install DNF packages
+  ansible.builtin.dnf:
+    name: "{{ dnf_packages }}"
+    state: present
+  when: dnf_packages | default([]) | length > 0
+
+- name: Install DNF groups
+  ansible.builtin.dnf:
+    name: "{{ dnf_groups }}"
+    state: present
+  when: dnf_groups | default([]) | length > 0
+
+- name: Install extra packages
+  ansible.builtin.dnf:
+    name: "{{ dnf_extras }}"
+    state: present
+  when: dnf_extras | default([]) | length > 0

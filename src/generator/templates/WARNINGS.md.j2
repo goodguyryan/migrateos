@@ -1,1 +1,99 @@
-# Jinja2 template for WARNINGS.md
+# MigrateOS Migration Warnings
+
+**Source:** {{ source_hostname }}
+**OS:** {{ source_os }} {{ source_version }}
+{{ version_note }}
+
+**Review `group_vars/new_server.yml` before running the playbook.**
+
+---
+
+{% if secrets_required %}
+## Secrets Found
+
+The following files contain secrets and were **NOT** copied:
+
+{% for secret in secrets_required %}
+- `{{ secret }}`
+{% endfor %}
+
+### Action Required
+1. Manually transfer secrets to the new server
+2. Or create `group_vars/vault.yml` and encrypt with `ansible-vault encrypt group_vars/vault.yml`
+3. Reference vault variables in `group_vars/new_server.yml`
+
+---
+{% endif %}
+
+{% if has_databases %}
+## Database Services Detected
+
+The following database services were found:
+
+{% for service in services_infra %}
+- `{{ service.name }}`
+{% endfor %}
+
+### Action Required
+- **PostgreSQL**: Use `pg_dump` to export, `pg_restore` to import
+- **MySQL/MariaDB**: Use `mysqldump` to export, `mysql` to import
+- **Redis**: Use `redis-cli BGSAVE` then copy dump.rdb
+- **MongoDB**: Use `mongodump` to export, `mongorestore` to import
+
+---
+{% endif %}
+
+{% if has_containers %}
+## Containers Detected
+
+The following containers are running on the source server:
+
+{% for container in running_containers %}
+- `{{ container }}`
+{% endfor %}
+
+### Action Required
+1. Commit each container: `docker commit <container> <image>` or `podman commit <container> <image>`
+2. Push to a registry: `docker push <image>` or `podman push <image>`
+3. Update your deployment config to pull from the registry on the new server
+
+---
+{% endif %}
+
+{% if network_warning %}
+## Network Configuration
+
+{{ network_warning }}
+
+Network connection files are in the `review/` directory. These require manual configuration on the new server.
+
+---
+{% endif %}
+
+{% if selinux_warning %}
+## Custom SELinux Modules
+
+{{ selinux_warning }}
+
+The following custom SELinux modules cannot be automatically migrated:
+
+{% for module in custom_selinux_modules %}
+- `{{ module }}`
+{% endfor %}
+
+### Action Required
+Recompile and install custom modules on the new server.
+
+---
+{% endif %}
+
+## Next Steps
+
+- [ ] Review `group_vars/new_server.yml`
+{% if secrets_required %}- [ ] Set up secrets in `group_vars/vault.yml`
+{% endif %}{% if has_databases %}- [ ] Dump databases from source server
+{% endif %}{% if has_containers %}- [ ] Commit and push container images
+{% endif %}- [ ] Set `ansible_host` in `inventory.ini` to the new server IP
+- [ ] Install collections: `ansible-galaxy collection install -r requirements.yml`
+- [ ] Run: `ansible-playbook site.yml --check --diff`
+- [ ] Run: `ansible-playbook site.yml`

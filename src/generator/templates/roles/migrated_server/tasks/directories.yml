@@ -1,1 +1,11 @@
-# tasks/directories.yml — create app directories
+# __VERSION_NOTE__
+---
+- name: Create application directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0755') }}"
+  loop: "{{ app_directories }}"
+  when: app_directories | default([]) | length > 0

@@ -1,1 +1,17 @@
-# tasks/validate.yml — validate target is Fedora, correct version
+# __VERSION_NOTE__
+---
+- name: Verify target is Fedora
+  ansible.builtin.assert:
+    that: ansible_distribution == 'Fedora'
+    fail_msg: "This playbook targets Fedora. Detected: {{ ansible_distribution }}"
+
+- name: Verify target version matches source
+  ansible.builtin.assert:
+    that: ansible_distribution_version == '{{ source_version }}'
+    fail_msg: "Expected Fedora {{ source_version }}, got {{ ansible_distribution_version }}"
+  when: source_version | default('') | length > 0
+
+- name: Check available disk space (minimum 2GB free on /)
+  ansible.builtin.assert:
+    that: ansible_mounts | selectattr('mount', 'equalto', '/') | map(attribute='size_available') | first > 2147483648
+    fail_msg: "Less than 2GB free on /"

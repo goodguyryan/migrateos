@@ -1,1 +1,14 @@
-# tasks/bootstrap.yml — pre-flight checks
+# __VERSION_NOTE__
+---
+- name: Check for Python 3
+  ansible.builtin.raw: test -e /usr/bin/python3
+  changed_when: false
+  failed_when: false
+  register: python3_check
+
+- name: Install Python 3 and sudo if missing
+  ansible.builtin.raw: dnf install -y python3 sudo
+  when: python3_check.rc != 0
+
+- name: Gather facts after bootstrap
+  ansible.builtin.setup:

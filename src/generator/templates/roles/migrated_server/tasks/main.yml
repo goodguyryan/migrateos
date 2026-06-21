@@ -1,3 +1,15 @@
-# tasks/main.yml — entry point
-# Imports all task files in order.
 # __VERSION_NOTE__
+# Source: __SOURCE_HOSTNAME__
+---
+- import_tasks: bootstrap.yml
+- import_tasks: validate.yml
+- import_tasks: repos.yml
+- import_tasks: packages.yml
+- import_tasks: users.yml
+- import_tasks: directories.yml
+- import_tasks: configs.yml
+- import_tasks: cron.yml
+- import_tasks: sysctl.yml
+- import_tasks: services.yml
+- import_tasks: selinux.yml
+- import_tasks: verification.yml
