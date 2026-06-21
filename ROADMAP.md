@@ -1,91 +1,66 @@
 # MigrateOS Development Roadmap
 
-## Phase 1: Scaffolding ✓ (current)
+## Phase 1: Scaffolding ✓
 
 - [x] Directory tree created
-- [x] pyproject.toml written
-- [x] .gitignore written
+- [x] pyproject.toml, .gitignore, README stub, migrate_scan.py
 - [x] All __init__.py files created
 - [x] All .py stub files created
 - [x] All .yml / .j2 template stubs created
 
-## Phase 2: Utilities (4 files)
+## Phase 2: Utilities ✓
 
-- [ ] src/utils/paths.py — blocklist, exclusions, secret detection, runtime detection, include scanning
-- [ ] src/utils/command.py — run(), run_ok(), run_output()
-- [ ] src/utils/yaml_utils.py — load_yaml(), save_yaml()
-- [ ] src/utils/dnf_version.py — detect_dnf_cmd(), userinstalled_cmd(), group_list_cmd()
+- [x] `src/utils/constants.py` — shared constants: blocklists, exclusions, secret patterns, runtime markers, install commands, stock SELinux modules, skip users, infra services, placeholder map, database services, task file names, J2 templates
+- [x] `src/utils/paths.py` — is_blocked_path, is_excluded_file, is_secret_file, detect_secrets_in_file, detect_runtime, suggest_install, detect_includes
+- [x] `src/utils/command.py` — safe_run (never raises), force_run (raises on failure)
+- [x] `src/utils/yaml_utils.py` — load_yaml, save_yaml
+- [x] `src/utils/dnf_utils.py` — detect_dnf_version (DNF4 vs DNF5), return_userinstalled_cmd, return_group_list_cmd, return_extras_cmd
 
-## Phase 3: Scanners (12 files)
+## Phase 3: Scanners ✓ (11/12 done)
 
-- [ ] src/scanner/os_facts.py
-- [ ] src/scanner/packages.py
-- [ ] src/scanner/services.py
-- [ ] src/scanner/users.py
-- [ ] src/scanner/directories.py
-- [ ] src/scanner/configs.py
-- [ ] src/scanner/firewalld.py
-- [ ] src/scanner/cron.py
-- [ ] src/scanner/selinux.py
-- [ ] src/scanner/network.py
-- [ ] src/scanner/sysctl.py
-- [ ] src/scanner/containers.py
+- [x] `src/scanner/os_facts.py`
+- [x] `src/scanner/packages.py`
+- [x] `src/scanner/services.py`
+- [x] `src/scanner/users.py`
+- [x] `src/scanner/directories.py`
+- [x] `src/scanner/configs.py`
+- [x] `src/scanner/cron.py`
+- [x] `src/scanner/selinux.py`
+- [x] `src/scanner/network.py`
+- [x] `src/scanner/sysctl.py`
+- [x] `src/scanner/containers.py`
 
-## Phase 4: Bundler (1 file)
+## Phase 4: Bundler ✓
 
-- [ ] src/bundler/file_collector.py
+- [x] `src/bundler/file_collector.py` — 9 functions: copy_file_from_disk, write_file_from_content, bundle_config_files, bundle_custom_repos, bundle_cron_files, bundle_sysctl_files, bundle_services, bundle_network_files, bundle_manifest
 
-## Phase 5: Generator (templates + code)
+## Phase 5: Generator ✓
 
-**Jinja2 templates (.j2):**
-- [ ] src/generator/templates/ansible.cfg.j2
-- [ ] src/generator/templates/requirements.yml.j2
-- [ ] src/generator/templates/inventory.ini.j2
-- [ ] src/generator/templates/site.yml.j2
-- [ ] src/generator/templates/group_vars/new_server.yml.j2
-- [ ] src/generator/templates/group_vars/vault.example.yml.j2
-- [ ] src/generator/templates/WARNINGS.md.j2
+- [x] `src/generator/ansible_generator.py` — 9 functions: apply_substitutions, render_j2, detect_databases, extract_repo_filenames, prefix_group_names, build_template_vars, copy_task_files, copy_bundled_files, generate
+- [x] 7 Jinja2 templates (.j2): ansible.cfg, requirements.yml, inventory.ini, site.yml, WARNINGS.md, group_vars/new_server.yml, group_vars/vault.example.yml
+- [x] 13 task YAML files + handlers: main.yml, bootstrap, validate, repos, packages, users, directories, configs, cron, sysctl, services, selinux, verification, handlers/main.yml
 
-**Task YAML files (plain YAML, no .j2):**
-- [ ] src/generator/templates/roles/migrated_server/tasks/main.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/bootstrap.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/validate.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/repos.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/packages.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/users.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/directories.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/configs.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/cron.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/sysctl.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/services.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/firewalld.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/selinux.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/verification.yml
-- [ ] src/generator/templates/roles/migrated_server/tasks/handlers/main.yml
+## Phase 6: CLI ✓
 
-**Generator code:**
-- [ ] src/generator/ansible_generator.py
+- [x] `src/cli/cli.py` — 3 subcommands (scan, generate, scan-and-generate), manifest assembly, bundler integration, summary output
+- [x] `migrate_scan.py` — entry point
 
-## Phase 6: CLI (2 files)
+## Tests (193 tests across 19 files) ✓
 
-- [ ] src/cli.py
-- [ ] migrate_scan.py (updated)
+- [x] `tests/utils/` — test_command (7), test_dnf_utils (6), test_paths (32), test_yaml_utils (6)
+- [x] `tests/scanner/` — 11 files, 70 tests
+- [x] `tests/bundler/` — test_file_collector (16)
+- [x] `tests/generator/` — test_ansible_output (23)
+- [x] `tests/cli/` — test_cli (33)
 
-## Phase 7: Tests (9 files)
+## Phase 8: Polish ✓
 
-- [ ] tests/conftest.py
-- [ ] tests/test_dnf_parsing.py
-- [ ] tests/test_systemctl_parsing.py
-- [ ] tests/test_secret_detection.py
-- [ ] tests/test_runtime_detection.py
-- [ ] tests/test_firewalld_parsing.py
-- [ ] tests/test_config_include_scanning.py
-- [ ] tests/test_manifest_roundtrip.py
-- [ ] tests/test_ansible_output.py
+- [x] `README.md` — full documentation with architecture
+- [x] `examples/example_manifest.yml` — complete realistic manifest
+- [x] `examples/generated-ansible/` — generated example output
+- [x] `ROADMAP.md` — this file, updated
+- [x] Stale docstring cleanup (yaml_utils.py, file_collector.py, ansible_generator.py, selinux.py)
 
-## Phase 8: Polish (3 items)
+## CI/CD ✓
 
-- [ ] README.md
-- [ ] examples/example_manifest.yml
-- [ ] examples/generated-ansible/ (run tool to produce)
-
+- [x] `.github/workflows/test_code.yml` — pytest on push, ubuntu-latest, Python 3.13
