@@ -1,9 +1,5 @@
-"""MigrateOS — Fedora server migration tool.
+"""MigrateOS — Fedora server migration tool."""
+from src.cli import main
 
-TODO:
-    - Import main() from src.cli
-    - Call main() when script is run directly
-    - Remove this placeholder docstring
-"""
-
-print("MigrateOS — Fedora server migration tool")
+if __name__ == "__main__":
+    main()
