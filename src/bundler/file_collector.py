@@ -43,7 +43,7 @@ def bundle_config_files(config_files: List[dict], output_dir: Path) -> dict:
     skipped = []
 
     for config_file in config_files:
-        if config_file.get("copy_method") == "directory":
+        if "entries" in config_file:
             for file_entry in config_file.get("entries", []):
                 if file_entry.get("is_secret"):
                     skipped.append(f"secret (Tier 1): {file_entry['path']}")
