@@ -16,7 +16,7 @@
 - [x] `src/utils/yaml_utils.py` — load_yaml, save_yaml
 - [x] `src/utils/dnf_utils.py` — detect_dnf_version (DNF4 vs DNF5), return_userinstalled_cmd, return_group_list_cmd, return_extras_cmd
 
-## Phase 3: Scanners ✓ (11/12 done)
+## Phase 3: Scanners ✓ (11/11 done)
 
 - [x] `src/scanner/os_facts.py`
 - [x] `src/scanner/packages.py`
@@ -64,3 +64,52 @@
 ## CI/CD ✓
 
 - [x] `.github/workflows/test_code.yml` — pytest on push, ubuntu-latest, Python 3.13
+
+---
+
+## Planned Features — HIGH Priority
+
+- [ ] Full system scan mode — `--full-scan` flag that walks `/etc/`, `/opt/`, `/srv/`, `/home/` automatically instead of requiring `--config-path` / `--app-path`. Applies stock config filtering to reduce noise.
+- [ ] Package version pinning — store exact RPM version+release in manifest, not just package name. Ensure target installs identical versions.
+- [ ] Config diffing (stock vs custom) — diff source configs against stock Fedora package defaults. Flag modified files, skip unmodified ones. Reduces manifest noise significantly.
+- [ ] Progress bars — real-time progress feedback during scan and generate phases. Show which scanner is running, how many packages/services/configs found, bundler copy progress. Use `rich` or simple counter-based output.
+- [ ] Firewalld scanner — `src/scanner/firewalld.py`. Parse zones, services, ports, rich rules, direct rules, ipsets, policies, custom XMLs. Generate `firewalld.yml` task template. Add to `TASK_FILE_NAMES` and `main.yml` imports.
+
+## Planned Features — MEDIUM Priority
+
+- [ ] Database dump integration — `--dump-databases` flag that runs `pg_dump`, `mysqldump`, `redis-cli BGSAVE`, `mongodump` automatically. Includes dumps in output for manual restore on target.
+- [ ] Container migration — `--commit-containers` flag that runs `docker commit` + `docker save` for each running container. Produces tarballs loadable on the target.
+- [ ] Target server validation — post-migration verification playbook. Check package versions, service states, config file checksums, sysctl values. Produce a diff report.
+- [ ] Boot configuration — scan `/etc/default/grub`, `/etc/dracut.conf.d/`, kernel command line. Detect custom boot parameters.
+- [ ] Network filesystems — detect NFS, CIFS/SMB mounts in `/etc/fstab`. Detect autofs configuration, iSCSI targets. Warn in manifest.
+- [ ] Logrotate configuration — scan `/etc/logrotate.conf` and `/etc/logrotate.d/`. Capture custom rotation rules for app logs.
+- [ ] User home directory content — optionally capture `.bashrc`, `.bash_profile`, `.vimrc`, `.gitconfig`, `~/.config/` app configs, user crontabs (`crontab -l`). Controlled by `--include-home-configs` flag.
+- [ ] Time synchronization — scan `/etc/chrony.conf` or `/etc/ntp.conf`. Capture NTP server settings.
+
+## Planned Features — LOW Priority
+
+- [ ] Pre/post migration hooks — run custom scripts before and after migration. Define in manifest under `hooks.pre_migration` and `hooks.post_migration`.
+- [ ] Multi-server migration — scan multiple servers in one run, produce one Ansible project with multiple plays. Handle inter-server dependencies.
+- [ ] Incremental migration — detect what changed since last scan, only update changed parts in manifest, only regenerate affected Ansible tasks.
+- [ ] Rollback capability — generate an undo playbook that reverts config files (using Ansible's `backup: yes` backups), stops started services, reverts sysctl changes.
+- [ ] Secret rotation — generate new random passwords/API keys during migration. Store in ansible-vault. Integrate with certbot for TLS certificate renewal.
+- [ ] Hardware-specific detection — GPU drivers (NVIDIA/AMD), firmware files, device-specific udev rules. Warn about hardware-dependent configs.
+- [ ] LVM/disk layout — scan physical volumes, volume groups, logical volumes. Capture filesystem types, mount options, partitioning. Warn about hardware-dependent layout.
+- [ ] RAID configuration — scan `/etc/mdadm.conf`. Capture RAID level, devices, spare drives.
+- [ ] Encryption — detect LUKS/dm-crypt configuration. Warn about encryption keys (never copy keys).
+- [ ] Mail configuration — scan `/etc/postfix/main.cf`, `/etc/aliases`. Capture mail routing settings.
+- [ ] Proxy configuration — scan `/etc/environment`, `/etc/profile.d/` for proxy settings. Capture DNF proxy, Docker proxy configs.
+- [ ] Auditing — scan `/etc/audit/` rules. Capture auditd configuration.
+- [ ] Compliance — CIS benchmark compliance status, STIG compliance, security hardening configs.
+- [ ] Tmpfiles configuration — scan `/etc/tmpfiles.d/`. Capture temporary file creation rules.
+- [ ] Udev rules — scan `/etc/udev/rules.d/`. Capture custom device rules.
+- [ ] Polkit rules — scan `/etc/polkit-1/rules.d/`. Capture privilege escalation rules.
+- [ ] D-Bus configuration — scan `/etc/dbus-1/`. Capture bus policies.
+
+## Firewalld (Deferred)
+
+- [ ] `src/scanner/firewalld.py`
+- [ ] `tests/scanner/test_firewalld.py`
+- [ ] `firewalld.yml` task template
+- [ ] Firewalld variables in `build_template_vars()` and `new_server.yml.j2`
+- [ ] Import in `main.yml` and `TASK_FILE_NAMES`
